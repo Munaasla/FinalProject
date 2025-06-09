@@ -1,0 +1,58 @@
+﻿@model Project.Models.Baby
+
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">👶 Add New Baby</h4>
+        </div>
+        <div class="card-body">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    Please correct the errors below.
+                </div>
+            }
+            <form asp-action="Create" method="post" enctype="multipart/form-data" novalidate>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label">Name</label>
+                        <input asp-for="Name" class="form-control" placeholder="Enter baby's name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="DateOfBirth" class="form-label">Date of Birth</label>
+                        <input asp-for="DateOfBirth" type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" />
+                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Weight" class="form-label">Weight (kg)</label>
+                        <input asp-for="Weight" type="number" min="1" class="form-control" />
+                        <span asp-validation-for="Weight" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Height" class="form-label">Height (cm)</label>
+                        <input asp-for="Height" type="number" min="1" class="form-control" />
+                        <span asp-validation-for="Height" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Vaccinations" class="form-label">Vaccination Date</label>
+                        <input asp-for="Vaccinations" type="date" class="form-control" />
+                        <span asp-validation-for="Vaccinations" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="Photo" class="form-label">Baby Photo</label>
+                        <input type="file" name="Photo" class="form-control" />
+                    </div>
+                </div>
+                <div class="mt-4 d-flex justify-content-between">
+                    <button type="submit" class="btn btn-success">💾 Save</button>
+                    <a asp-action="Index" class="btn btn-secondary">❌ Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

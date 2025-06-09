@@ -1,0 +1,74 @@
+﻿@model List<Project.Models.Baby>
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">👶 Baby List</h2>
+    <div class="d-flex justify-content-between flex-wrap mb-4">
+        <div>
+            <a asp-action="Create" class="btn btn-success me-2">➕ Add New Baby</a>
+            <a asp-action="Calendar" class="btn btn-outline-secondary">📅 Vaccination Calendar</a>
+        </div>
+        <a asp-controller="Account" asp-action="Logout" class="btn btn-danger">🚪 Logout</a>
+    </div>
+    <form asp-action="Index" method="get" class="d-flex justify-content-center mb-4" style="max-width: 500px;">
+        <div class="input-group shadow-sm rounded">
+            <span class="input-group-text bg-white">
+                <img src="https://cdn-icons-png.flaticon.com/512/622/622669.png" width="20" />
+            </span>
+            <input type="text" name="searchName" class="form-control" placeholder="Search by name..." />
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+    <div class="row">
+        @foreach (var baby in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            @if (!string.IsNullOrEmpty(baby.PhotoPath))
+                            {
+                                <img src="@baby.PhotoPath" alt="Photo" class="rounded-circle me-3" width="60" height="60" style="object-fit: cover;" />
+                            }
+                            <div>
+                                <h5 class="card-title mb-0">@baby.Name</h5>
+                                <small class="text-muted">@((int)((DateTime.Today - baby.DateOfBirth).TotalDays / 30)) months</small>
+                            </div>
+                        </div>
+                        <p class="mb-1"><strong>Weight:</strong> @baby.Weight kg</p>
+                        <p class="mb-1"><strong>Height:</strong> @baby.Height cm</p>
+                        <p class="mb-1">
+                            <strong>Vaccination:</strong> @(baby.Vaccinations.OrderByDescending(v => v.Date).FirstOrDefault()?.Date.ToShortDateString() ?? "N/A")
+                        </p>
+                        <p class="mb-2">
+                            <strong>Status:</strong>
+                            @{
+                                var lastVac = baby.Vaccinations.OrderByDescending(v => v.Date).FirstOrDefault();
+                            }
+
+                            @if (lastVac != null && lastVac.Date < DateTime.Today)
+                            {
+                                <span class="badge bg-warning text-dark">Overdue</span>
+                            }
+                            else if (lastVac != null && lastVac.Date < DateTime.Today.AddDays(7))
+                            {
+                                <span class="badge bg-danger">Due soon</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Up to date</span>
+                            }
+
+                        </p>
+                        <div class="d-flex justify-content-between mt-3">
+                            <a asp-action="Summary" asp-route-id="@baby.Id" class="btn btn-outline-info btn-sm">📄 Summary</a>
+                            <a asp-action="Edit" asp-route-id="@baby.Id" class="btn btn-outline-warning btn-sm">✏️ Edit</a>
+                            <form asp-action="Delete" asp-route-id="@baby.Id" method="post" onsubmit="return confirm('Delete @baby.Name?');">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">🗑 Delete</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

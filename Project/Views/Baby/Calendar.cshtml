@@ -1,0 +1,88 @@
+﻿@model List<Project.Models.Baby>
+
+@{
+    ViewData["Title"] = "Vaccination Calendar";
+}
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">📅 Vaccination Calendar</h4>
+        </div>
+        <div class="card-body bg-light">
+            <div id="calendar"></div>
+            <div class="mt-4 text-end">
+                <button type="button" onclick="history.back()" class="btn btn-secondary">⬅ Back</button>
+            </div>
+            @if (Model.Any(b => b.Vaccinations != null && b.Vaccinations.Any()))
+            {
+                <table class="table table-bordered table-striped mt-4">
+                    <thead class="table-success">
+                        <tr>
+                            <th>Baby Name</th>
+                            <th>Vaccination Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var baby in Model)
+                        {
+                            foreach (var vac in baby.Vaccinations)
+                            {
+                                <tr>
+                                    <td>@baby.Name</td>
+                                    <td>@vac.Date.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <div class="alert alert-warning mt-4">No vaccinations found for your babies.</div>
+            }
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            height: 'auto',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,listMonth'
+            },
+            events: [
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        var baby = Model[i];
+        if (baby.Vaccinations != null && baby.Vaccinations.Count > 0)
+        {
+            var ordered = baby.Vaccinations.OrderBy(v => v.Date).ToList();
+            for (int j = 0; j < ordered.Count; j++)
+            {
+                var v = ordered[j];
+                var isLast = (i == Model.Count - 1 && j == ordered.Count - 1);
+                var comma = isLast ? "" : ",";
+                <text>
+                                            {{
+                                                title: "@baby.Name - Vaccination",
+                                                start: "@v.Date.ToString("yyyy-MM-dd")",
+                                                color: "#28a745"
+                                            }}@comma
+                </text>
+            }
+        }
+    }
+            ]
+        });
+        calendar.render();
+    });
+</script>

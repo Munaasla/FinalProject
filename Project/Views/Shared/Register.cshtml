@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card shadow p-4" style="max-width: 500px; width: 100%;">
+        <div class="card-body">
+            <h3 class="card-title text-center mb-4">📝 Register</h3>
+            <form asp-action="Register" method="post">
+                <div class="mb-3">
+                    <label for="Name" class="form-label">👤 Name</label>
+                    <input type="text" id="Name" name="Name" class="form-control" placeholder="Full Name" required />
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">📧 Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="you@example.com" required />
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">🔒 Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required />
+                </div>
+                <div class="mb-3">
+                    <label for="PhoneNumber" class="form-label">📱 Phone Number</label>
+                    <input type="text" id="PhoneNumber" name="PhoneNumber" class="form-control" placeholder="05X-XXXXXXX" required />
+                </div>
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger text-center mt-2">@ViewBag.Error</div>
+                }
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success">Register</button>
+                </div>
+            </form>
+            <div class="text-center mt-3">
+                <p>Already have an account?</p>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">⬅ Back</a>
+            </div>
+        </div>
+    </div>
+</div>

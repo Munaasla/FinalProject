@@ -1,0 +1,43 @@
+﻿@model Project.Models.DashboardModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white">
+            <h3 class="mb-0">👶 Welcome, @Model.ParentName!</h3>
+        </div>
+        <div class="card-body">
+            <p class="lead">Here you can track your baby's growth and development.</p>
+            <div class="row text-center mt-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card border-info h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">👶 Total Babies</h5>
+                            <p class="display-6 fw-bold">@Model.Babies.Count</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card border-success h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">⚖️ Average Weight</h5>
+                            <p class="display-6 fw-bold">@Model.AverageWeight kg</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card border-warning h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">📏 Average Height</h5>
+                            <p class="display-6 fw-bold">@Model.AverageHeight cm</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a asp-controller="Baby" asp-action="Index" class="btn btn-lg btn-outline-primary">🍼 Go to Baby Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>

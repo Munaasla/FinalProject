@@ -1,0 +1,48 @@
+﻿@model Project.Models.Baby
+@{
+    ViewData["Title"] = "Photo Album";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">📸 @Model.Name’s Photo Album</h2>
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <form asp-controller="Photo" asp-action="Upload" enctype="multipart/form-data" method="post" class="d-flex flex-wrap gap-2 align-items-center justify-content-center">
+                <input type="hidden" name="babyId" value="@Model.Id" />
+                <input type="file" name="file" class="form-control w-auto" required />
+                <button type="submit" class="btn btn-success">⬆️ Upload Photo</button>
+            </form>
+        </div>
+    </div>
+    @foreach (var yearGroup in Model.Photos.GroupBy(p => p.UploadedAt.Year).OrderByDescending(g => g.Key))
+    {
+        <div class="card mb-5 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">📅 @yearGroup.Key</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var photo in yearGroup)
+                    {
+                        <div class="col-md-3 text-center mb-4">
+                            <div class="card shadow-sm h-100">
+                                <img src="~/uploads/@photo.FileName" class="card-img-top img-fluid rounded" style="max-height: 200px; object-fit: cover;" alt="Baby Photo" />
+                                <div class="card-body p-2">
+                                    <small class="text-muted">@photo.UploadedAt.ToString("dd/MM/yyyy")</small>
+                                    <form asp-controller="Photo" asp-action="Delete" method="post" class="mt-2">
+                                        <input type="hidden" name="id" value="@photo.Id" />
+                                        <input type="hidden" name="babyId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">🗑️ Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+    <div class="text-center mt-4">
+        <a asp-action="Index" asp-controller="Baby" class="btn btn-secondary">⬅ Back</a>
+    </div>
+</div>

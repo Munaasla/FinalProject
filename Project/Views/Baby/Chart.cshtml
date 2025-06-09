@@ -1,0 +1,81 @@
+﻿@model Project.Models.Baby
+
+@{
+    ViewData["Title"] = "Growth Chart";
+    var measurements = Model.Measurements.OrderBy(m => m.Date).ToList();
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">📈 @Model.Name – Growth Chart (Single View)</h2>
+    <div class="card shadow-lg mb-5">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">📊 Yearly Growth Overview</h5>
+        </div>
+        <div class="card-body">
+            <canvas id="growthChart" height="100"></canvas>
+        </div>
+    </div>
+    <div class="text-center">
+        <a asp-action="Growth" asp-route-id="@Model.Id" class="btn btn-secondary">⬅ Back to Profile</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = [
+    @foreach (var m in measurements)
+    {
+        <text>"@m.Date.ToString("MMM yyyy", System.Globalization.CultureInfo.InvariantCulture)",</text>
+    }
+    ];
+    const weightData = [
+    @foreach (var m in measurements)
+    {
+        <text>@m.Weight,</text>
+    }
+    ];
+    const heightData = [
+    @foreach (var m in measurements)
+    {
+        <text>@m.Height,</text>
+    }
+    ];
+    const ctx = document.getElementById('growthChart').getContext('2d');
+    const growthChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Weight (kg)',
+                    data: weightData,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.3
+                },
+                {
+                    label: 'Height (cm)',
+                    data: heightData,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: { mode: 'index', intersect: false }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>

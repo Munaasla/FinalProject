@@ -1,0 +1,147 @@
+﻿@model Project.Models.Baby
+@{
+    ViewData["Title"] = "Growth Details";
+    var currentYear = DateTime.Today.Year;
+    var allMeasurements = Model.Measurements?.Where(m => m.Date.Year == currentYear).OrderBy(m => m.Date).ToList() ?? new();
+    var avgW = allMeasurements.Any() ? allMeasurements.Average(m => m.Weight) : 0;
+    var avgH = allMeasurements.Any() ? allMeasurements.Average(m => m.Height) : 0;
+}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">📈 @Model.Name – Growth History</h2>
+    <div class="d-flex justify-content-between mb-4">
+        <a asp-controller="Measurement" asp-action="Create" asp-route-babyId="@Model.Id" class="btn btn-primary">
+            ➕ Add Monthly Measurement
+        </a>
+        <a asp-controller="Baby" asp-action="Chart" asp-route-id="@Model.Id" class="btn btn-info">
+            📊 View Growth Chart
+        </a>
+        <button type="button" onclick="history.back()" class="btn btn-secondary">⬅ Back</button>
+    </div>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0">📋 Monthly Measurements</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Weight (kg)</th>
+                        <th>Height (cm)</th>
+                        <th>Growth Analysis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var ms = Model.Measurements.OrderBy(m => m.Date).ToList();
+                        for (int i = 0; i < ms.Count; i++)
+                        {
+                            var current = ms[i];
+                            var prev = i > 0 ? ms[i - 1] : null;
+                            var weightDiff = prev != null ? current.Weight - prev.Weight : 0;
+                            var heightDiff = prev != null ? current.Height - prev.Height : 0;
+                            var issues = "";
+                            if (prev != null)
+                            {
+                                if (Math.Abs(weightDiff) >= 10)
+                                    issues += "⚠️ Weight changed by " + weightDiff + " kg. ";
+                                if (Math.Abs(heightDiff) >= 10)
+                                    issues += "⚠️ Height changed by " + heightDiff + " cm.";
+                            }
+                            <tr>
+                                <td>@current.Date.ToShortDateString()</td>
+                                <td>@current.Weight</td>
+                                <td>@current.Height</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(issues))
+                                    {
+                                        <span class="badge bg-danger">@issues</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success">Normal</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="alert alert-light border rounded shadow-sm">
+        <h5 class="mb-3">📊 Summary for @currentYear</h5>
+        <p><strong>Average Weight:</strong> @avgW.ToString("0.0") kg</p>
+        <p><strong>Average Height:</strong> @avgH.ToString("0.0") cm</p>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = [
+    @foreach (var m in Model.Measurements.OrderBy(m => m.Date))
+    {
+        <text>"@m.Date.ToString("MMM yyyy")",</text>
+    }
+    ];
+    const weightData = [
+    @foreach (var m in Model.Measurements.OrderBy(m => m.Date))
+    {
+        <text>@m.Weight,</text>
+    }
+    ];
+    const heightData = [
+    @foreach (var m in Model.Measurements.OrderBy(m => m.Date))
+    {
+        <text>@m.Height,</text>
+    }
+    ];
+    const ctx = document.getElementById('growthChart').getContext('2d');
+    const growthChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Weight (kg)',
+                    data: weightData,
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.3
+                },
+                {
+                    label: 'Height (cm)',
+                    data: heightData,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>

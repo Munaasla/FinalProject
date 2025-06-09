@@ -1,0 +1,44 @@
+﻿@model Project.Models.Baby
+
+<div class="container d-flex justify-content-center align-items-center mt-5 mb-5">
+    <div class="card shadow-lg w-100" style="max-width: 800px;">
+        <div class="card-header bg-primary text-white text-center">
+            <h3 class="mb-0">👶 @Model.Name's Profile</h3>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-4 text-center">
+                    <img src="@Model.PhotoPath" alt="Baby Photo" class="img-fluid rounded-circle shadow-sm" style="width: 150px; height: 150px; object-fit: cover;" />
+                    <p class="mt-2 text-muted">📸 Baby Photo</p>
+                </div>
+                <div class="col-md-8">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item"><strong>🎂 Date of Birth:</strong> @Model.DateOfBirth.ToShortDateString()</li>
+                        @{
+                            var ageMonths = ((DateTime.Today.Year - Model.DateOfBirth.Year) * 12 + DateTime.Today.Month - Model.DateOfBirth.Month);
+                            var years = ageMonths / 12;
+                            var months = ageMonths % 12;
+                        }
+                        <li class="list-group-item"><strong>📆 Age:</strong> @years years and @months months</li>
+                        <li class="list-group-item">
+                            <strong>💉 Last Vaccination:</strong> @(Model.Vaccinations.OrderByDescending(v => v.Date).FirstOrDefault()?.Date.ToShortDateString() ?? "N/A")
+                        </li>
+                        <li class="list-group-item"><strong>⚖️ Weight:</strong> @Model.Weight kg</li>
+                        <li class="list-group-item"><strong>📏 Height:</strong> @Model.Height cm</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="d-flex justify-content-around mt-4 flex-wrap gap-3">
+                <a asp-action="Photos" asp-controller="Baby" asp-route-id="@Model.Id" class="btn btn-outline-dark shadow-sm">
+                    📷 View Photo Album
+                </a>
+                <a asp-action="Growth" asp-controller="Baby" asp-route-id="@Model.Id" class="btn btn-outline-primary shadow-sm">
+                    📈 View Development
+                </a>
+                <a asp-action="Index" asp-controller="Baby" class="btn btn-secondary shadow-sm">
+                    ⬅ Back to Baby List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
